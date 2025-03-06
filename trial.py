@@ -256,7 +256,8 @@ elif st.session_state.page == "loading":
         if df is not None:
             st.session_state.loading_complete = True
             switch_page("dashboard")
-
+        else:
+            st.error("Failed to load file. Please check the file format and try again.")
 
 # ----------------------------- PAGE 4: DASHBOARD -----------------------------
 # =============================================================================
