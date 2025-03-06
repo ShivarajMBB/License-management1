@@ -646,12 +646,12 @@ elif st.session_state.page == "dashboard":
     active_counts = {
         "Guest": ((df_external_filtered.get("Guest", pd.DataFrame()).shape[0] - df_external_No_access.get("Guest", pd.DataFrame()).shape[0]) + 
                   (df_internal_filtered.get("Guest", pd.DataFrame()).shape[0] - df_internal_No_access.get("Guest", pd.DataFrame()).shape[0])),
-        "Member": ((df_external_filtered.get("Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Member", pd.DataFrame()).shape[0]) +
-                   (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] + df_internal_No_access.get("Member", pd.DataFrame()).shape[0])),
+        "Member": ((df_external_filtered.get("Member", pd.DataFrame()).shape[0] - df_external_No_access.get("Member", pd.DataFrame()).shape[0]) +
+                   (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Member", pd.DataFrame()).shape[0])),
         "Provisional Member": ((df_external_filtered.get("Provisional Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Provisional Member", pd.DataFrame()).shape[0]) +
                                (df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] + df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0])),
-        "Viewer": ((df_external_filtered.get("Viewer", pd.DataFrame()).shape[0] + df_external_No_access.get("Viewer", pd.DataFrame()).shape[0]) + 
-                   (df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] + df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0]))
+        "Viewer": ((df_external_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_external_No_access.get("Viewer", pd.DataFrame()).shape[0]) + 
+                   (df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0]))
     }
     
     cost_after_trueup = st.session_state.license_adjustment * active_licenses
