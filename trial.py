@@ -491,7 +491,7 @@ elif st.session_state.page == "dashboard":
     
         # Text input directly bound to session state
         st.text_input(
-            "  Enter per license cost:", 
+            "  Enter per license cost: (Default $500)", 
             key="license_cost",
             on_change=format_currency  # Updates both UI and calculation immediately
         )
@@ -638,7 +638,7 @@ elif st.session_state.page == "dashboard":
     
     inactive_counts = {
         "Guest": (df_internal_No_access.get("Guest", pd.DataFrame()).shape[0] + df_external_No_access.get("Guest", pd.DataFrame()).shape[0]),
-        "Member": (df_internal_No_access.get("Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Member", pd.DataFrame()).shape[0]),
+        "Member": (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Member", pd.DataFrame()).shape[0]),
         "Provisional Member": (df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Provisional Member", pd.DataFrame()).shape[0]),
         "Viewer": (df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0] + df_external_No_access.get("Viewer", pd.DataFrame()).shape[0])
     }
@@ -691,7 +691,7 @@ elif st.session_state.page == "dashboard":
                     <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-2.svg">
                 </div>
                 <div class="metric-data">
-                    <div class="metric-label"># Licenses after True-up</div>
+                    <div class="metric-label"># Licenses required after True-up</div>
                     <div class="metric-value">{active_licenses}</div>
                 </div>
             </div>
@@ -739,7 +739,7 @@ elif st.session_state.page == "dashboard":
                     <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-3.svg">
                 </div>
                 <div class="metric-data">
-                    <div class="metric-label">cost after True-up</div>
+                    <div class="metric-label">Smartsheet cost after True-up</div>
                     <div class="metric-value">{cost_after_trueup:.2f}</div>
                 </div>
             </div>
@@ -1143,9 +1143,9 @@ elif st.session_state.page == "dashboard":
             df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0]
         ],
         "Need to be Member": [
-            df_internal_filtered.get("Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Member", pd.DataFrame()).shape[0]- df_internal_downgrade.get("Member", pd.DataFrame()).shape[0], 
-            df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0] - df_internal_downgrade.get("Provisional Member", pd.DataFrame()).shape[0], 
-            df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0] - df_internal_downgrade.get("Viewer", pd.DataFrame()).shape[0]
+            df_internal_filtered.get("Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Member", pd.DataFrame()).shape[0], 
+            df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0], 
+            df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0]
         ],
         "Downgrade to Viewer": [
             df_internal_downgrade.get("Member", pd.DataFrame()).shape[0], 
