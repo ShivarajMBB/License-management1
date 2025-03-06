@@ -113,7 +113,7 @@ if st.session_state.page == "login":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  # Dynamic spacing
-                st.image("C:/Users/User/Downloads/Smartsheet/logo.png", width=150, use_container_width=False)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
 
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
 elif st.session_state.page == "upload":
@@ -199,7 +199,7 @@ elif st.session_state.page == "upload":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  
-                st.image("C:/Users/User/Downloads/Smartsheet/logo.png", width=150, use_container_width=False)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
 elif st.session_state.page == "loading":
