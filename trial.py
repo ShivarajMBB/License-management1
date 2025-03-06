@@ -113,7 +113,7 @@ if st.session_state.page == "login":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  # Dynamic spacing
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
+                st.image("C:/Users/User/Downloads/Smartsheet/logo.png", width=150, use_container_width=False)
 
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
 elif st.session_state.page == "upload":
@@ -199,7 +199,7 @@ elif st.session_state.page == "upload":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
+                st.image("C:/Users/User/Downloads/Smartsheet/logo.png", width=150, use_container_width=False)
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
 elif st.session_state.page == "loading":
@@ -534,23 +534,17 @@ elif st.session_state.page == "dashboard":
         )
         
     # Show the filename in col1 inside a properly styled div
-    with col5:
+    with col6:
         st.markdown(
             f"<div class='filename-container'>{filename_to_display}</div>",
             unsafe_allow_html=True
         )
     
     # Show "Change File" button in col3
-    with col6:
+    with col7:
         if st.button("Change File"):
             switch_page("upload")  # Navigate to upload page
         
-    # Custom-styled button for "Export Report" in col4
-    with col7:
-        st.button("Export report")
-   
-    st.markdown("<br>", unsafe_allow_html=True)
-    
 # =============================================================================
 #     if "inactive_days" not in st.session_state:
 #         st.session_state.inactive_days = 90  # Default value
