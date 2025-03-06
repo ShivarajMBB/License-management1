@@ -1,1 +1,1 @@
-A
+https://license-management.streamlit.app/
