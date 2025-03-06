@@ -638,7 +638,7 @@ elif st.session_state.page == "dashboard":
     
     inactive_counts = {
         "Guest": (df_internal_No_access.get("Guest", pd.DataFrame()).shape[0] + df_external_No_access.get("Guest", pd.DataFrame()).shape[0]),
-        "Member": (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Member", pd.DataFrame()).shape[0]),
+        "Member": (df_internal_No_access.get("Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Member", pd.DataFrame()).shape[0]),
         "Provisional Member": (df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0] + df_external_No_access.get("Provisional Member", pd.DataFrame()).shape[0]),
         "Viewer": (df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0] + df_external_No_access.get("Viewer", pd.DataFrame()).shape[0])
     }
@@ -1159,7 +1159,7 @@ elif st.session_state.page == "dashboard":
         ],
         "Recommendations": [f"Out of {int_active_members} Active Licenses Downgrade {df_internal_downgrade.get('Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the Inactive Licenses",
                             f"Out of {int_active_prov} Active Licenses Downgrade {df_internal_downgrade.get('Provisional Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the inactive licenses",
-                            "Revoke the inactive ID's                                                                                                                              "]
+                            "         Revoke the inactive ID's                                                                                                                              "]
     }
     
     df_report = pd.DataFrame(data_external)
