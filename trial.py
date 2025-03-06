@@ -1145,12 +1145,12 @@ elif st.session_state.page == "dashboard":
         "Need to be Member": [
             df_internal_filtered.get("Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Member", pd.DataFrame()).shape[0]- df_internal_downgrade.get("Member", pd.DataFrame()).shape[0], 
             df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] - df_internal_No_access.get("Provisional Member", pd.DataFrame()).shape[0] - df_internal_downgrade.get("Provisional Member", pd.DataFrame()).shape[0], 
-            df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0] - df_internal_downgrade.get("Viewer", pd.DataFrame()).shape[0]
+            0
         ],
         "Downgrade to Viewer": [
             df_internal_downgrade.get("Member", pd.DataFrame()).shape[0], 
             df_internal_downgrade.get("Provisional Member", pd.DataFrame()).shape[0], 
-            df_internal_downgrade.get("Viewer", pd.DataFrame()).shape[0]
+            df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] - df_internal_No_access.get("Viewer", pd.DataFrame()).shape[0] - df_internal_downgrade.get("Viewer", pd.DataFrame()).shape[0]
         ],
         "Downgrade to No Access": [ 
             df_internal_No_access.get("Member", pd.DataFrame()).shape[0], 
