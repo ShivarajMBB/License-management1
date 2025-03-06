@@ -491,7 +491,7 @@ elif st.session_state.page == "dashboard":
     
         # Text input directly bound to session state
         st.text_input(
-            "  Enter per license cost: (Default $500)", 
+            "  Enter per license cost:", 
             key="license_cost",
             on_change=format_currency  # Updates both UI and calculation immediately
         )
@@ -691,7 +691,7 @@ elif st.session_state.page == "dashboard":
                     <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-2.svg">
                 </div>
                 <div class="metric-data">
-                    <div class="metric-label"># Licenses required after True-up</div>
+                    <div class="metric-label"># Licenses after True-up</div>
                     <div class="metric-value">{active_licenses}</div>
                 </div>
             </div>
@@ -739,7 +739,7 @@ elif st.session_state.page == "dashboard":
                     <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-3.svg">
                 </div>
                 <div class="metric-data">
-                    <div class="metric-label">Smartsheet cost after True-up</div>
+                    <div class="metric-label">cost after True-up</div>
                     <div class="metric-value">{cost_after_trueup:.2f}</div>
                 </div>
             </div>
