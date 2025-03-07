@@ -316,7 +316,7 @@ elif st.session_state.page == "loading":
             
             # Show progress animation before switching pages
             for i in range(1, 101):
-                time.sleep(0.01)
+                time.sleep(0.001)
                 title_subtext_placeholder.markdown(
                     f"""
                     <div style="text-align: center;">
