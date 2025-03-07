@@ -232,6 +232,8 @@ elif st.session_state.page == "loading":
         df = None
         if uploaded_file:
             df = load_data(uploaded_file)
+            df.columns = df.columns.str.strip()
+            df.columns = df.columns.str.lower()
             st.session_state.df = df  # Store loaded dataframe in session state
 
         # Extract unique email domains
@@ -278,7 +280,7 @@ elif st.session_state.page == "loading":
         
                 # Update 'User Domain' based on selection
                 if df is not None and email_column:
-                    df["User Domain"] = df[email_column].apply(
+                    df["user domain"] = df[email_column].apply(
                         lambda x: "Internal" if "@" in str(x) and x.split('@')[1] in selected_domains else "External"
                     )
         
@@ -354,7 +356,7 @@ elif st.session_state.page == "dashboard":
 
     # Function to filter users
     def filter_users(df, user_types, matching_columns):
-        filtered = {user_type: df[df["User Type"] == user_type].copy() for user_type in user_types}
+        filtered = {user_type: df[df["user type"] == user_type].copy() for user_type in user_types}
         
         no_access = {
             user_type: filtered[user_type][(filtered[user_type][matching_columns] == 0).all(axis=1)]
@@ -645,15 +647,47 @@ elif st.session_state.page == "dashboard":
     
     df = st.session_state.get("df")
     
-    df_internal = df[df["User Domain"] == "Internal"]
-    df_external = df[df["User Domain"] == "External"]
+    df.columns = df.columns.str.strip()
+    
+    if df is None:
+        st.error("No data found. Please upload a valid file.")
+        st.stop()  # Stop execution if df is None
+    
+    # Standard user types
+    user_types_mapping = {
+        "internal": ["Member", "Provisional Member", "Viewer"],
+        "external": ["Guest", "Provisional Member", "Viewer"]
+    }
+    
+    # Custom mapping for renaming specific user types
+    custom_mapping = {
+        "Licensed User": "Member",
+        "Unlicensed Admin and Editor": "Provisional Member",
+        # Add any other variations here
+    }
+    
+    # Function to rename user types only if they exist in the mapping
+    def standardize_user_type(user_type):
+        user_type = str(user_type).strip() if pd.notna(user_type) else user_type  # Handle NaN values
+        return custom_mapping.get(user_type, user_type)  # Rename if in mapping, else keep as is
+    
+    # Apply the function to standardize the "User Type" column
+    if "user type" in df.columns:
+        df["user type"] = df["user type"].apply(standardize_user_type)
+    else:
+        st.error("'User Type' column not found in the uploaded file.")
+        st.stop()  # Stop execution if column is missing
+    
+    df_internal = df[df["user domain"] == "Internal"]
+    df_external = df[df["user domain"] == "External"]
     
     user_counts = {
         "Internal Users": len(df_internal),
         "External Users": len(df_external)
     }
+
     
-    member_counts = (df_internal["User Type"] == "Member").sum() + (df_external["User Type"] == "Member").sum()
+    member_counts = (df_internal["user type"] == "Member").sum() + (df_external["user type"] == "Member").sum()
 
     # Define different keywords for internal and external users
     internal_keywords = [str(st.session_state.get("inactive_days_internal", 90))]  # Default to 90 if missing
