@@ -563,8 +563,8 @@ elif st.session_state.page == "dashboard":
     
     df = st.session_state.get("df")
     
-    df_internal = df[df["User domain"] == "Internal"]
-    df_external = df[df["User domain"] == "External"]
+    df_internal = df[df["User Domain"] == "Internal"]
+    df_external = df[df["User Domain"] == "External"]
     
     user_counts = {
         "Internal Users": len(df_internal),
