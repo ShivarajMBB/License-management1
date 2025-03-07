@@ -113,7 +113,7 @@ if st.session_state.page == "login":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  # Dynamic spacing
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150, use_container_width=False)
 
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
 elif st.session_state.page == "upload":
@@ -199,7 +199,7 @@ elif st.session_state.page == "upload":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png", width=150, use_container_width=False)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150, use_container_width=False)
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
 elif st.session_state.page == "loading":
@@ -453,7 +453,7 @@ elif st.session_state.page == "dashboard":
         """
         <div class="white-background">
             <div class="logo-container">
-                <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Logo.png">
+                <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png">
             </div>
             <div class="user-image">
                 <img src="https://randomuser.me/api/portraits/men/75.jpg">  <!-- Example user image -->
@@ -672,7 +672,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-1.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-1.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">Total Users</div>
@@ -688,7 +688,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-2.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-2.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label"># Licenses after True-up</div>
@@ -704,7 +704,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">Current # Licenses</div>
@@ -720,7 +720,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-4.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">Current smartsheet cost</div>
@@ -736,7 +736,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-3.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-3.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">cost after True-up</div>
@@ -754,7 +754,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">User possible to downgrade</div>
@@ -820,7 +820,7 @@ elif st.session_state.page == "dashboard":
             f"""
             <div class="custom-metric">
                 <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/License-management/master/Icon-4.svg">
+                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">Potential saving</div>
