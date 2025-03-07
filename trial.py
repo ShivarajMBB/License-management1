@@ -464,7 +464,7 @@ elif st.session_state.page == "dashboard":
     )
     
     # Create four columns: col1 for filename, col2 for spacing, col3 for button 1, col4 for button 2
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.7,1.5, 1.5, 2.6, 1, 1, 1])
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1.3, 1.2, 1.2, 3.3, 1, 1])
 
     with col1:
         # Initialize session state for license cost input
@@ -520,17 +520,20 @@ elif st.session_state.page == "dashboard":
         )
         
     with col3:
-        if "inactive_days" not in st.session_state:
-            st.session_state.inactive_days = 90  # Default value
-            
-        def update_inactive_days():
-               st.session_state.inactive_days = st.session_state.inactive_days
-               
+        st.session_state.inactive_days_internal = st.session_state.get("inactive_days_internal", 90)  # Default value
         st.selectbox(
-            "Inactive for days",
+            "Internals Inactive days",
             options=[90, 180, 270, 365],
-            key="inactive_days",  # Binds session state
-            on_change=update_inactive_days  # Updates session state dynamically
+            key="inactive_days_internal"  # Directly binds to session state
+        )
+    
+    # External inactive days selection
+    with col4:
+        st.session_state.inactive_days_external = st.session_state.get("inactive_days_external", 90)  # Default value
+        st.selectbox(
+            "Externals Inactive days",
+            options=[90, 180, 270, 365],
+            key="inactive_days_external"  # Directly binds to session state
         )
         
     # Show the filename in col1 inside a properly styled div
@@ -567,10 +570,16 @@ elif st.session_state.page == "dashboard":
         "Internal Users": len(df_internal),
         "External Users": len(df_external)
     }
+    
+    member_counts = (df_internal["User Type"] == "Member").sum() + (df_external["User Type"] == "Member").sum()
 
-    # Check column names based on keywords
-    keywords = [str(st.session_state.inactive_days)]  # Replace with actual keywords
-    matching_columns = [col for col in df.columns if any(keyword.lower() in col.lower() for keyword in keywords)]
+    # Define different keywords for internal and external users
+    internal_keywords = [str(st.session_state.get("inactive_days_internal", 90))]  # Default to 90 if missing
+    external_keywords = [str(st.session_state.get("inactive_days_external", 90))]
+    
+    # Find matching columns for internal and external users separately
+    internal_matching_columns = [col for col in df.columns if any(keyword.lower() in col.lower() for keyword in internal_keywords)]
+    external_matching_columns = [col for col in df.columns if any(keyword.lower() in col.lower() for keyword in external_keywords)]
 
     # Define user types
     user_types = {
@@ -579,7 +588,7 @@ elif st.session_state.page == "dashboard":
     }
 
     # Apply filtering for internal users
-    result_internal = filter_users(df_internal, user_types["internal"], matching_columns)
+    result_internal = filter_users(df_internal, user_types["internal"], internal_matching_columns)
     if len(result_internal) == 3:
         df_internal_filtered, df_internal_No_access, df_internal_downgrade = result_internal
     else:
@@ -587,7 +596,7 @@ elif st.session_state.page == "dashboard":
         df_internal_downgrade = {}
     
     # Apply filtering for external users
-    result_external = filter_users(df_external, user_types["external"], matching_columns)
+    result_external = filter_users(df_external, user_types["external"], external_matching_columns)
     if len(result_external) == 3:
         df_external_filtered, df_external_No_access, df_external_downgrade = result_external
     else:
@@ -615,12 +624,14 @@ elif st.session_state.page == "dashboard":
         - df_internal_downgrade.get("Member", pd.DataFrame()).shape[0]
     )
     
-    domain_counts = {
-        "Guest": (df_internal_filtered.get("Guest", pd.DataFrame()).shape[0] + df_external_filtered.get("Guest", pd.DataFrame()).shape[0]),
-        "Member": (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] + df_external_filtered.get("Member", pd.DataFrame()).shape[0]),
-        "Provisional Member": (df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] + df_external_filtered.get("Provisional Member", pd.DataFrame()).shape[0]),
-        "Viewer": (df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] + df_external_filtered.get("Viewer", pd.DataFrame()).shape[0])
-    }
+# =============================================================================
+#     domain_counts = {
+#         "Guest": (df_internal_filtered.get("Guest", pd.DataFrame()).shape[0] + df_external_filtered.get("Guest", pd.DataFrame()).shape[0]),
+#         "Member": (df_internal_filtered.get("Member", pd.DataFrame()).shape[0] + df_external_filtered.get("Member", pd.DataFrame()).shape[0]),
+#         "Provisional Member": (df_internal_filtered.get("Provisional Member", pd.DataFrame()).shape[0] + df_external_filtered.get("Provisional Member", pd.DataFrame()).shape[0]),
+#         "Viewer": (df_internal_filtered.get("Viewer", pd.DataFrame()).shape[0] + df_external_filtered.get("Viewer", pd.DataFrame()).shape[0])
+#     }
+# =============================================================================
     
     domain_counts_external = {
         "Guest": (df_external_filtered.get("Guest", pd.DataFrame()).shape[0]),
@@ -708,7 +719,7 @@ elif st.session_state.page == "dashboard":
                 </div>
                 <div class="metric-data">
                     <div class="metric-label">Current # Licenses</div>
-                    <div class="metric-value">{current_licenses}</div>
+                    <div class="metric-value">{member_counts}</div>
                 </div>
             </div>
             """,
@@ -1159,7 +1170,7 @@ elif st.session_state.page == "dashboard":
         ],
         "Recommendations": [f"Out of {int_active_members} Active Licenses Downgrade {df_internal_downgrade.get('Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the Inactive Licenses",
                             f"Out of {int_active_prov} Active Licenses Downgrade {df_internal_downgrade.get('Provisional Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the inactive licenses",
-                            "Revoke the inactive ID's                                                                                                                              "]
+                            "         Revoke the inactive ID's                                                                                                                              "]
     }
     
     df_report = pd.DataFrame(data_external)
@@ -1172,8 +1183,20 @@ elif st.session_state.page == "dashboard":
         b64 = base64.b64encode(csv.encode()).decode()
         return f'data:file/csv;base64,{b64}'
     
-    # Create containers for both tables
-    st.subheader("Detailed License Report for Externals")
+    st.markdown("""
+        <style>
+            .custom-header {
+                font-size: 14px;
+                font-weight: bold;
+                color: black;
+                background-color: #e6e9f0;
+                padding: 4px;
+                border-radius: 5px;
+                text-align: center;
+            }
+        </style>
+        <div class="custom-header">Detailed License Report for Externals</div>
+    """, unsafe_allow_html=True)
     
     # Add a column for downloads if it doesn't exist
     if "Download" not in df_report.columns:
@@ -1207,7 +1230,9 @@ elif st.session_state.page == "dashboard":
                 key=f"download_ext_{idx}"
             )
     
-    st.subheader("Detailed License Report for Internals")
+    st.markdown("""
+        <div class="custom-header">Detailed License Report for Internals</div>
+    """, unsafe_allow_html=True)
     
     # Add a column for downloads if it doesn't exist
     if "Download" not in df_report_2.columns:
