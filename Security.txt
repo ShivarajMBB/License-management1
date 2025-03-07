@@ -1,0 +1,8 @@
+[
+    {"user1@example.com": "password123"},
+    {"user2@example.com": "securePass!"},
+    {"user3@example.com": "myStrongPwd"},
+    {"user4@example.com": "randomPass456"},
+    {"user5@example.com": "testPass789"},
+    {"user6@example.com": "qwertyUiop@"}
+]
