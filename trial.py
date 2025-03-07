@@ -616,12 +616,14 @@ elif st.session_state.page == "dashboard":
             key="inactive_days_external"  # Directly binds to session state
         )
         
-    # Show the filename in col1 inside a properly styled div
-    with col6:
-        st.markdown(
-            f"<div class='filename-container'>{filename_to_display}</div>",
-            unsafe_allow_html=True
-        )
+# =============================================================================
+#     # Show the filename in col1 inside a properly styled div
+#     with col6:
+#         st.markdown(
+#             f"<div class='filename-container'>{filename_to_display}</div>",
+#             unsafe_allow_html=True
+#         )
+# =============================================================================
     
     # Show "Change File" button in col3
     with col7:
