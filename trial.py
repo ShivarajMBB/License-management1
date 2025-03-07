@@ -4,6 +4,8 @@ import time
 import plotly.express as px
 import plotly.graph_objects as go
 import base64
+import requests
+import json
 # =============================================================================
 # from streamlit_echarts import st_echarts
 # from streamlit_extras.switch_page_button import switch_page
@@ -31,37 +33,36 @@ def switch_page(page_name):
 
 main_container = st.empty()
 
+# Function to fetch and load credentials from GitHub
+@st.cache_data
+def load_credentials():
+    url = "https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Security.txt"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            credentials = json.loads(response.text)  # Parse JSON content
+            return {list(user.keys())[0]: list(user.values())[0] for user in credentials}  # Convert to dictionary
+        else:
+            st.error("Failed to load credentials. Please check your connection.")
+            return {}
+    except Exception as e:
+        st.error(f"Error loading credentials: {str(e)}")
+        return {}
+
+# Load credentials
+VALID_CREDENTIALS = load_credentials()
+
 # ---------------------------- PAGE 1: LOGIN ---------------------------------
 if st.session_state.page == "login":
     with main_container.container():
         st.markdown(
             """
             <style>
-                .sign-in-title {
-                    text-align: center;
-                    font-weight: bold; /* Makes text bold */
-                    margin-bottom: -10px; /* Reduce bottom spacing */
-                }
-                .sign-in-subtext {
-                    text-align: center;
-                    font-size: 14px;
-                    color: #6c757d;
-                    margin-top: -10px; /* Reduce top spacing */
-                }
-                .stButton > button {
-                    width: 100%; /* Make button full width */
-                    padding: 12px; /* Increase button height */
-                    font-size: 18px; /* Increase font size */
-                    font-weight: bold;
-                    background-color: #007BFF; /* Blue background */
-                    color: white;
-                    border: none;
-                    border-radius: 8px; /* Rounded corners */
-                    cursor: pointer;
-                }
-                .stButton > button:hover {
-                    background-color: #0056b3; /* Darker blue on hover */
-                }
+                .sign-in-title { text-align: center; font-weight: bold; margin-bottom: -10px; }
+                .sign-in-subtext { text-align: center; font-size: 14px; color: #6c757d; margin-top: -10px; }
+                .stButton > button { width: 100%; padding: 12px; font-size: 18px; font-weight: bold;
+                                     background-color: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; }
+                .stButton > button:hover { background-color: #0056b3; }
             </style>
             <h2 class='sign-in-title'>Sign In</h2>
             <p class='sign-in-subtext'>Enter your email and password to sign in</p>
@@ -69,16 +70,15 @@ if st.session_state.page == "login":
             unsafe_allow_html=True
         )
     
-        # Initialize logo spacing in session state (only on first run)
+        # Initialize spacing for logo
         if "logo_spacing" not in st.session_state:
-            st.session_state.logo_spacing = 200  # Default spacing
-        
+            st.session_state.logo_spacing = 200
+
         st.session_state.logo_spacing = 200
         
-        # Creating Columns
-        col1, col2, col3 = st.columns([1, 2, 1])  # Middle column is wider
-    
-        with col2:  # Centering the input fields
+        # Create columns for centered layout
+        col1, col2, col3 = st.columns([1, 2, 1])  
+        with col2:  
             inner_col1, inner_col2, inner_col3 = st.columns([0.8, 2, 0.8])
             with inner_col2:
                 email = st.text_input("Email*", placeholder="mail@simmmple.com")
@@ -86,34 +86,31 @@ if st.session_state.page == "login":
     
                 # Functional Sign In Button
                 if st.button("Sign In"):  
-                    if email and password:
+                    if email in VALID_CREDENTIALS and VALID_CREDENTIALS[email] == password:
                         st.session_state.authenticated = True
                         switch_page("upload")  # Move to Upload Page Immediately
                     else:
-                        st.error("Please enter valid credentials!")
+                        st.error("Invalid email or password!")
                         st.session_state.logo_spacing = 128  # Reduce spacing when error appears
-    
+
             # Footer text
             st.markdown(
                 """
                 <style>
-                    .rights-text {
-                        text-align: center;
-                        font-size: 12px;
-                        color: #6c757d;
-                        margin-top: 20px; /* Reduce top spacing */
-                    }
+                    .rights-text { text-align: center; font-size: 12px; color: #6c757d; margin-top: 20px; }
                 </style>
                 <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
                 """,
                 unsafe_allow_html=True
             )
-    
-        with col2:  # Centering the logo
+
+        # Centering the logo
+        with col2:
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
-                st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  # Dynamic spacing
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150, use_container_width=False)
+                st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150)
+
 
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
 elif st.session_state.page == "upload":
@@ -205,14 +202,14 @@ elif st.session_state.page == "upload":
 elif st.session_state.page == "loading":
     if not st.session_state.file_uploaded:
         switch_page("upload")  # Redirect to upload if file is missing
-        
+
     with main_container.container():
-        title_subtext_placeholder = st.empty()  # Title & Subtext placeholder
-    
-        # Create centered column layout for progress bar & logo
+        title_subtext_placeholder = st.empty()  # Placeholder for title & subtext
+
+        # Centered progress bar layout
         col1, col2, col3 = st.columns([1.5, 1.5, 1.5])  
         with col2:
-            progress_bar = st.progress(0)  # Initialize progress bar inside col2 (center)
+            progress_bar = st.progress(0)  # Initialize progress bar in the center
         
         uploaded_file = st.session_state.get("uploaded_file")  # Retrieve uploaded file
 
@@ -226,7 +223,7 @@ elif st.session_state.page == "loading":
                 elif uploaded_file.name.endswith((".xls", ".xlsx")):
                     df = pd.read_excel(uploaded_file)
                 else:
-                    return None  # Return None for unsupported format
+                    return None  # Return None for unsupported formats
                 return df
             except Exception:
                 return None  # Return None if loading fails
@@ -235,29 +232,112 @@ elif st.session_state.page == "loading":
         df = None
         if uploaded_file:
             df = load_data(uploaded_file)
-            st.session_state.df = df  # Store loaded dataframe in session_state
+            st.session_state.df = df  # Store loaded dataframe in session state
 
-        # Show progress animation
-        for i in range(1, 101):
-            time.sleep(0.001)  # Smoother progress update 
-            title_subtext_placeholder.markdown(
-                f"""
-                <div style="text-align: center;">
-                    <h2 style="margin-bottom: -10px;">Processing... {i}%</h2>
-                    <p style="font-size: 14px; color: #6c757d; margin-top: 0px; margin-bottom: 10px;">
-                    Please wait till we process the report</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            progress_bar.progress(i)  # Update progress inside loop
-    
-        # **If data is loaded successfully, move to dashboard**
+        # Extract unique email domains
+        def extract_email_domains(df):
+            email_column = None
+            for col in df.columns:
+                if "email" in col.lower():  # Identify email column
+                    email_column = col
+                    break
+            
+            if email_column:
+                df[email_column] = df[email_column].astype(str)  # Ensure string type
+                df["domain"] = df[email_column].apply(lambda x: x.split('@')[1] if '@' in x else None)
+                unique_domains = df["domain"].dropna().unique().tolist()  # Get unique domains
+                return unique_domains, email_column
+            return [], None
+        
+        # Process email domains if dataframe exists
         if df is not None:
+            unique_domains, email_column = extract_email_domains(df)
+            st.session_state.unique_domains = unique_domains  # Store unique domains
+
+        # Ensure selection flags are set in session state
+        if "selection_complete" not in st.session_state:
+            st.session_state.selection_complete = False
+
+        if "domain_filtering" not in st.session_state:
+            st.session_state.domain_filtering = None  # Track if user wants domain filtering
+        
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        
+        # Ask user whether they want to filter by email domain
+        st.subheader("Do you want to filter Internals by email domain?")
+        filter_choice = st.radio("Choose an option:", ["Yes", "No"], key="domain_filtering")
+
+         # If user chooses "Yes", show domain selection
+        if filter_choice == "Yes":
+            st.subheader("Select Internal Email Domains")
+            selected_domains = st.multiselect("Choose Internal domains:", st.session_state.unique_domains, key="selected_domains")
+        
+            # Continue button appears only when a selection is made
+            if selected_domains and st.button("Continue"):
+                st.session_state.selection_complete = True  # Mark selection as complete
+        
+                # Update 'User Domain' based on selection
+                if df is not None and email_column:
+                    df["User Domain"] = df[email_column].apply(
+                        lambda x: "Internal" if "@" in str(x) and x.split('@')[1] in selected_domains else "External"
+                    )
+        
+                    # Remove 'domain' column after processing
+                    if "domain" in df.columns:
+                        df.drop(columns=["domain"], inplace=True)
+        
+                    st.session_state.df = df  # Update session state with processed df
+                
+                # Show progress animation
+                for i in range(1, 101):
+                    time.sleep(0.01)  # Smoother progress update 
+                    title_subtext_placeholder.markdown(
+                        f"""
+                        <div style="text-align: center;">
+                            <h2 style="margin-bottom: -10px;">Processing... {i}%</h2>
+                            <p style="font-size: 14px; color: #6c757d; margin-top: 0px; margin-bottom: 10px;">
+                            Please wait till we process the report</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    progress_bar.progress(i)  # Update progress inside loop
+        
+                # Move to dashboard after progress completes
+                st.session_state.page = "dashboard"
+                st.session_state.loading_complete = True
+                st.rerun()
+        
+        # If user selects "No", move to dashboard without changing 'User Domain'
+        elif filter_choice == "No":
+            st.session_state.selection_complete = True  # Mark selection as complete
+        
+            # No changes to df, just proceed to dashboard
+            
+            # Show progress animation before switching pages
+            for i in range(1, 101):
+                time.sleep(0.01)
+                title_subtext_placeholder.markdown(
+                    f"""
+                    <div style="text-align: center;">
+                        <h2 style="margin-bottom: -10px;">Processing... {i}%</h2>
+                        <p style="font-size: 14px; color: #6c757d; margin-top: 0px; margin-bottom: 10px;">
+                        Please wait till we process the report</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                progress_bar.progress(i)
+        
+            st.session_state.page = "dashboard"
             st.session_state.loading_complete = True
-            switch_page("dashboard")
-        else:
+            st.rerun()
+
+
+        # If data fails to load, show error message
+        if df is None:
             st.error("Failed to load file. Please check the file format and try again.")
+
 
 # ----------------------------- PAGE 4: DASHBOARD -----------------------------
 # =============================================================================
