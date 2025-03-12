@@ -1028,7 +1028,7 @@ elif st.session_state.page == "dashboard":
             df_external_No_access.get("Provisional Member", pd.DataFrame()).shape[0], 
             df_external_No_access.get("Viewer", pd.DataFrame()).shape[0]
         ],
-        "Recommendations": ["Revoke the inactive ID's                                                                                                                              ",
+        "Recommendations": ["Revoke the inactive ID's",
                             "Downgrade all the active licenses to (Guest), Revoke the inactive once",
                             "Downgrade all the active licenses to (Guest), Revoke the inactive once",
                             "Downgrade all the active licenses to (Guest), Revoke the inactive once"]
@@ -1071,7 +1071,7 @@ elif st.session_state.page == "dashboard":
         ],
         "Recommendations": [f"Out of {int_active_members} Active Licenses Downgrade {df_internal_downgrade.get('Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the Inactive Licenses",
                             f"Out of {int_active_prov} Active Licenses Downgrade {df_internal_downgrade.get('Provisional Member', pd.DataFrame()).shape[0]} to Viewers, Revoke the inactive licenses",
-                            "         Revoke the inactive ID's                                                                                                                              "]
+                            "Revoke the inactive ID's"]
     }
     
     df_report = pd.DataFrame(data_external)
