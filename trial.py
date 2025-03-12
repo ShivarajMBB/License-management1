@@ -115,39 +115,29 @@ if st.session_state.page == "login":
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
 elif st.session_state.page == "upload":
     
+    # Backup credentials before clearing cache
+    VALID_CREDENTIALS = load_credentials()
+    st.session_state["valid_credentials"] = VALID_CREDENTIALS  # Store in session state
+    
+    # Clear all cache except credentials
+    st.cache_data.clear()
+    
+    # Restore cached credentials
+    VALID_CREDENTIALS = st.session_state["valid_credentials"]
+    
+    # Ensure authentication check
     if not st.session_state.authenticated:
         switch_page("login")  # Redirect to login if not authenticated
-        
+    
     with main_container.container():
-
         st.markdown(
             """
             <style>
-                .sign-in-title {
-                    text-align: center;
-                    font-weight: bold;
-                    margin-bottom: -10px;
-                }
-                .sign-in-subtext {
-                    text-align: center;
-                    font-size: 14px;
-                    color: #6c757d;
-                    margin-top: -10px;
-                }
-                .stButton > button {
-                    width: 100%; /* Make button full width */
-                    padding: 12px; /* Increase button height */
-                    font-size: 18px; /* Increase font size */
-                    font-weight: bold;
-                    background-color: #007BFF; /* Blue background */
-                    color: white;
-                    border: none;
-                    border-radius: 8px; /* Rounded corners */
-                    cursor: pointer;
-                }
-                .stButton > button:hover {
-                    background-color: #0056b3; /* Darker blue on hover */
-                }
+                .sign-in-title { text-align: center; font-weight: bold; margin-bottom: -10px; }
+                .sign-in-subtext { text-align: center; font-size: 14px; color: #6c757d; margin-top: -10px; }
+                .stButton > button { width: 100%; padding: 12px; font-size: 18px; font-weight: bold;
+                                     background-color: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; }
+                .stButton > button:hover { background-color: #0056b3; }
             </style>
             <h2 class='sign-in-title'>Upload Documents</h2>
             <p class='sign-in-subtext'>Upload documents to process the report</p>
@@ -155,47 +145,50 @@ elif st.session_state.page == "upload":
             unsafe_allow_html=True
         )
     
-        # Initialize logo spacing if not already set
+        # Initialize logo spacing
         if "logo_spacing" not in st.session_state:
-            st.session_state.logo_spacing = 300  # Default spacing
-        
+            st.session_state.logo_spacing = 300
+            
         st.session_state.logo_spacing = 300
-        
-        # Centering file uploader
-        col1, col2, col3 = st.columns([1.5, 2, 1.5])  
+    
+        # File Upload Section
+        col1, col2, col3 = st.columns([1.5, 2, 1.5])
         with col2:
-            uploaded_file = st.file_uploader("", type=["csv", "xls", "xlsx"])  
+            uploaded_file = st.file_uploader("", type=["csv", "xls", "xlsx"])
             
             if uploaded_file:
-                st.success("File uploaded successfully!")    
+                st.success("File uploaded successfully!")
                 st.session_state.file_uploaded = True
                 st.session_state.uploaded_file = uploaded_file  # Store actual file object
                 st.session_state.uploaded_filename = uploaded_file.name
                 st.session_state.logo_spacing = 115
-            
-                if st.button("Continue"):  
-                    switch_page("loading") # Ensures smooth transition after button click
-            
-            # Footer text
-            st.markdown(
-                """
-                <style>
-                    .rights-text {
-                        text-align: center;
-                        font-size: 12px;
-                        color: #6c757d;
-                        margin-top: 20px;
-                    }
-                </style>
-                <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
-                """,
-                unsafe_allow_html=True
-            )
     
-        with col2:  
-            inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
+                if st.button("Continue"):
+                    try:
+                        # Perform Processing (Simulate)
+                        switch_page("loading")  # Move to the loading page
+                    except Exception as e:
+                        st.error(f"Processing failed: {e}")
+                        st.cache_data.clear()  # Clear all cache except credentials
+                        st.session_state["valid_credentials"] = VALID_CREDENTIALS  # Restore credentials
+                        switch_page("upload")  # Go back to upload page
+    
+        # Footer text
+        st.markdown(
+            """
+            <style>
+                .rights-text { text-align: center; font-size: 12px; color: #6c757d; margin-top: 20px; }
+            </style>
+            <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
+            """,
+            unsafe_allow_html=True
+        )
+    
+        # Centering the logo
+        with col2:
+            inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])
             with inner_col2:
-                st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)  
+                st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)
                 st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150, use_container_width=False)
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
@@ -232,9 +225,15 @@ elif st.session_state.page == "loading":
         df = None
         if uploaded_file:
             df = load_data(uploaded_file)
-            df.columns = df.columns.str.strip()
-            df.columns = df.columns.str.lower()
-            st.session_state.df = df  # Store loaded dataframe in session state
+            if df is not None:
+                df.columns = df.columns.str.strip()
+                df.columns = df.columns.str.lower()
+                st.session_state.df = df  # Store loaded dataframe in session state
+# =============================================================================
+#             else:
+#                 st.error("Failed to load file. Please check the format and try again.")
+# =============================================================================
+
 
         # Extract unique email domains
         def extract_email_domains(df):
@@ -959,220 +958,6 @@ elif st.session_state.page == "dashboard":
         )
     
     st.markdown("<br><br>", unsafe_allow_html=True)
-            
-    # Display Charts
-    col1, col2, col3, col4, col5 = st.columns([0.1,1.8,0.1,1.8,0.1])
-    
-    with col2:
-        # Create pie chart data
-        pie_data = pd.DataFrame({
-            "User Type": list(user_counts.keys()),
-            "Count": list(user_counts.values())
-        })
-    
-        # Generate pie chart
-        fig1 = px.pie(
-            pie_data,
-            values="Count",
-            names="User Type",
-            hole=0.5,  # Donut chart style
-            color_discrete_sequence=["lightpink", "lightblue"]  # Adjust colors
-        )
-    
-        # Customize title
-        fig1.update_layout(
-            title=dict(
-                text="Internal vs External Users",
-                font=dict(size=16, color="black"),
-                x=0.35,  # Center the title
-                y=0.96  
-            ),
-            legend=dict(
-                title=dict(
-                    text="User domain",  # Legend title
-                    font=dict(size=14, color="black"),
-                    side="left"  # Moves title above the legend items
-                ),
-                orientation="h",  # Horizontal legend
-                font=dict(size=12, color="black"),
-                yanchor="bottom",
-                y=-0.2,  # Move below the chart
-                xanchor="center",
-                x=0.5  # Center the legend horizontally
-            )
-        )
-    
-        # Update percentage label styles
-        fig1.update_traces(
-            textinfo="percent",  # Show percentage + category labels
-            textfont=dict(size=12, color="black", family="Arial Black"),  # Readable font
-        )
-    
-        # Display chart in Streamlit
-        st.plotly_chart(fig1, use_container_width=True)
-    
-    # License Cost by User Level (Donut Chart)
-    with col4:
-        # Convert data to DataFrame format
-        df_external = pd.DataFrame({
-            "User Level": list(domain_counts_external.keys()),
-            "Cost": list(domain_counts_external.values())
-        })
-        
-        df_internal = pd.DataFrame({
-            "User Level": list(domain_counts_internal.keys()),
-            "Cost": list(domain_counts_internal.values())
-        })
-        
-        # Create Pie Chart Figure
-        fig2 = go.Figure()
-        
-        # Add traces for both datasets
-        fig2.add_trace(go.Pie(
-            labels=df_external["User Level"],
-            values=df_external["Cost"],
-            hole=0.5,
-            name="External Users"
-        ))
-        
-        fig2.add_trace(go.Pie(
-            labels=df_internal["User Level"],
-            values=df_internal["Cost"],
-            hole=0.5,
-            name="Internal Users",
-            visible=False  # Initially hidden
-        ))
-        
-        # Add Dropdown Menu Inside Chart
-        fig2.update_layout(
-            updatemenus=[{
-                "buttons": [
-                    {
-                        "label": "External Users",
-                        "method": "update",
-                        "args": [{"visible": [True, False]}]  # No title update
-                    },
-                    {
-                        "label": "Internal Users",
-                        "method": "update",
-                        "args": [{"visible": [False, True]}]  # No title update
-                    }
-                ],
-                "direction": "down",
-                "showactive": True,
-                "x": 0.5,
-                "xanchor": "center",
-                "y": 1.2,
-                "yanchor": "top"
-            }],
-            title=dict(
-                text="Guest vs Members vs Provisional vs Viewers",  # Static title
-                font=dict(size=16, color="black"),
-                x=0.27,  
-                y=0.96  
-            ),
-            legend=dict(
-                title=dict(
-                    text="User Type",
-                    font=dict(size=14, color="black"),
-                    side="left"
-                ),
-                orientation="h",
-                font=dict(size=12, color="black"),
-                yanchor="bottom",
-                y=-0.2,
-                xanchor="center",
-                x=0.5
-            )
-        )
-        
-        # Update percentage label styles (bold, color, size)
-        fig2.update_traces(
-            textinfo="percent",
-            textfont=dict(size=12, color="black", family="Arial Black")
-        )
-        
-        # Display the Pie Chart in Streamlit
-        st.plotly_chart(fig2, use_container_width=True)
-
-    with col2:
-        # Data
-        inactive_data = pd.DataFrame({
-            "User Level": list(inactive_counts.keys()),
-            "Inactive Licenses": list(inactive_counts.values())
-        })
-    
-        # Plotly Bar Chart
-        fig1 = px.bar(
-            inactive_data,
-            x="User Level",
-            y="Inactive Licenses",
-            text_auto=True,
-            color="User Level"
-        )
-    
-        # Update Layout (No Legend)
-        fig1.update_layout(
-            title=dict(
-                text="Inactive User by Type",
-                x=0.06,  # Centers title
-                y=0.96,
-                font=dict(size=16)
-            ),
-            xaxis=dict(title=""),  # Remove X-axis title
-            yaxis=dict(title=""),  # Remove Y-axis title
-            showlegend=False  # Hide legend completely
-        )
-    
-        # Update Label Styles (Bold, Black Color)
-        fig1.update_traces(
-            texttemplate="%{y}",  # Show values as text
-            textfont=dict(size=12, color="black", family="Arial"),  # Bold & Color
-        )
-    
-        # Display in Streamlit with unique key
-        st.plotly_chart(fig1, use_container_width=True, key="inactive_chart")
-
-    
-    with col4:
-        # Data
-        active_data = pd.DataFrame({
-            "User Level": list(active_counts.keys()),
-            "Active Licenses": list(active_counts.values())  # Different dataset for Active Licenses
-        })
-    
-        # Plotly Bar Chart
-        fig2 = px.bar(
-            active_data,  # Correct dataset
-            x="User Level",
-            y="Active Licenses",
-            text_auto=True,
-            color="User Level"
-        )
-    
-        # Update Layout
-        fig2.update_layout(
-            title=dict(
-                text="Active User by Type",
-                x=0.06,  # Centers title
-                y=0.96,
-                font=dict(size=16)
-            ),
-            xaxis=dict(title=""),  # Remove X-axis title
-            yaxis=dict(title=""),  # Remove Y-axis title
-            showlegend=False  # Hide legend completely
-        )
-        
-        # Update Label Styles (Bold, Black Color)
-        fig2.update_traces(
-            texttemplate="%{y}",  # Show values as text
-            textfont=dict(size=12, color="black", family="Arial"),  # Bold & Color
-        )
-    
-        # Display in Streamlit with unique key
-        st.plotly_chart(fig2, use_container_width=True, key="active_chart")
-
-    st.markdown("<br>", unsafe_allow_html=True)
     
     # Collect emails for downgrade to guest
     downgrade_to_guest_emails = []
@@ -1437,3 +1222,217 @@ elif st.session_state.page == "dashboard":
 #                     key="download_int_multi"
 #                 )
 # =============================================================================
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Display Charts
+    col1, col2, col3, col4, col5 = st.columns([0.1,1.8,0.1,1.8,0.1])
+    
+    with col2:
+        # Create pie chart data
+        pie_data = pd.DataFrame({
+            "User Type": list(user_counts.keys()),
+            "Count": list(user_counts.values())
+        })
+    
+        # Generate pie chart
+        fig1 = px.pie(
+            pie_data,
+            values="Count",
+            names="User Type",
+            hole=0.5,  # Donut chart style
+            color_discrete_sequence=["lightpink", "lightblue"]  # Adjust colors
+        )
+    
+        # Customize title
+        fig1.update_layout(
+            title=dict(
+                text="Internal vs External Users",
+                font=dict(size=16, color="black"),
+                x=0.35,  # Center the title
+                y=0.96  
+            ),
+            legend=dict(
+                title=dict(
+                    text="User domain",  # Legend title
+                    font=dict(size=14, color="black"),
+                    side="left"  # Moves title above the legend items
+                ),
+                orientation="h",  # Horizontal legend
+                font=dict(size=12, color="black"),
+                yanchor="bottom",
+                y=-0.2,  # Move below the chart
+                xanchor="center",
+                x=0.5  # Center the legend horizontally
+            )
+        )
+    
+        # Update percentage label styles
+        fig1.update_traces(
+            textinfo="percent",  # Show percentage + category labels
+            textfont=dict(size=12, color="black", family="Arial Black"),  # Readable font
+        )
+    
+        # Display chart in Streamlit
+        st.plotly_chart(fig1, use_container_width=True)
+    
+    # License Cost by User Level (Donut Chart)
+    with col4:
+        # Convert data to DataFrame format
+        df_external = pd.DataFrame({
+            "User Level": list(domain_counts_external.keys()),
+            "Cost": list(domain_counts_external.values())
+        })
+        
+        df_internal = pd.DataFrame({
+            "User Level": list(domain_counts_internal.keys()),
+            "Cost": list(domain_counts_internal.values())
+        })
+        
+        # Create Pie Chart Figure
+        fig2 = go.Figure()
+        
+        # Add traces for both datasets
+        fig2.add_trace(go.Pie(
+            labels=df_external["User Level"],
+            values=df_external["Cost"],
+            hole=0.5,
+            name="External Users"
+        ))
+        
+        fig2.add_trace(go.Pie(
+            labels=df_internal["User Level"],
+            values=df_internal["Cost"],
+            hole=0.5,
+            name="Internal Users",
+            visible=False  # Initially hidden
+        ))
+        
+        # Add Dropdown Menu Inside Chart
+        fig2.update_layout(
+            updatemenus=[{
+                "buttons": [
+                    {
+                        "label": "External Users",
+                        "method": "update",
+                        "args": [{"visible": [True, False]}]  # No title update
+                    },
+                    {
+                        "label": "Internal Users",
+                        "method": "update",
+                        "args": [{"visible": [False, True]}]  # No title update
+                    }
+                ],
+                "direction": "down",
+                "showactive": True,
+                "x": 0.5,
+                "xanchor": "center",
+                "y": 1.2,
+                "yanchor": "top"
+            }],
+            title=dict(
+                text="Guest vs Members vs Provisional vs Viewers",  # Static title
+                font=dict(size=16, color="black"),
+                x=0.27,  
+                y=0.96  
+            ),
+            legend=dict(
+                title=dict(
+                    text="User Type",
+                    font=dict(size=14, color="black"),
+                    side="left"
+                ),
+                orientation="h",
+                font=dict(size=12, color="black"),
+                yanchor="bottom",
+                y=-0.2,
+                xanchor="center",
+                x=0.5
+            )
+        )
+        
+        # Update percentage label styles (bold, color, size)
+        fig2.update_traces(
+            textinfo="percent",
+            textfont=dict(size=12, color="black", family="Arial Black")
+        )
+        
+        # Display the Pie Chart in Streamlit
+        st.plotly_chart(fig2, use_container_width=True)
+
+    with col2:
+        # Data
+        inactive_data = pd.DataFrame({
+            "User Level": list(inactive_counts.keys()),
+            "Inactive Licenses": list(inactive_counts.values())
+        })
+    
+        # Plotly Bar Chart
+        fig1 = px.bar(
+            inactive_data,
+            x="User Level",
+            y="Inactive Licenses",
+            text_auto=True,
+            color="User Level"
+        )
+    
+        # Update Layout (No Legend)
+        fig1.update_layout(
+            title=dict(
+                text="Inactive User by Type",
+                x=0.06,  # Centers title
+                y=0.96,
+                font=dict(size=16)
+            ),
+            xaxis=dict(title=""),  # Remove X-axis title
+            yaxis=dict(title=""),  # Remove Y-axis title
+            showlegend=False  # Hide legend completely
+        )
+    
+        # Update Label Styles (Bold, Black Color)
+        fig1.update_traces(
+            texttemplate="%{y}",  # Show values as text
+            textfont=dict(size=12, color="black", family="Arial"),  # Bold & Color
+        )
+    
+        # Display in Streamlit with unique key
+        st.plotly_chart(fig1, use_container_width=True, key="inactive_chart")
+
+    
+    with col4:
+        # Data
+        active_data = pd.DataFrame({
+            "User Level": list(active_counts.keys()),
+            "Active Licenses": list(active_counts.values())  # Different dataset for Active Licenses
+        })
+    
+        # Plotly Bar Chart
+        fig2 = px.bar(
+            active_data,  # Correct dataset
+            x="User Level",
+            y="Active Licenses",
+            text_auto=True,
+            color="User Level"
+        )
+    
+        # Update Layout
+        fig2.update_layout(
+            title=dict(
+                text="Active User by Type",
+                x=0.06,  # Centers title
+                y=0.96,
+                font=dict(size=16)
+            ),
+            xaxis=dict(title=""),  # Remove X-axis title
+            yaxis=dict(title=""),  # Remove Y-axis title
+            showlegend=False  # Hide legend completely
+        )
+        
+        # Update Label Styles (Bold, Black Color)
+        fig2.update_traces(
+            texttemplate="%{y}",  # Show values as text
+            textfont=dict(size=12, color="black", family="Arial"),  # Bold & Color
+        )
+    
+        # Display in Streamlit with unique key
+        st.plotly_chart(fig2, use_container_width=True, key="active_chart")
