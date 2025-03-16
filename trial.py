@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import base64
 import requests
 import json
+import io
 # =============================================================================
 # from streamlit_echarts import st_echarts
 # from streamlit_extras.switch_page_button import switch_page
@@ -214,7 +215,8 @@ elif st.session_state.page == "loading":
                 if uploaded_file.name.endswith(".csv"):
                     df = pd.read_csv(uploaded_file)
                 elif uploaded_file.name.endswith((".xls", ".xlsx")):
-                    df = pd.read_excel(uploaded_file)
+                    file_bytes = io.BytesIO(uploaded_file.getvalue())  # Convert to BytesIO
+                    df = pd.read_excel(file_bytes, engine="openpyxl")
                 else:
                     return None  # Return None for unsupported formats
                 return df
@@ -258,7 +260,7 @@ elif st.session_state.page == "loading":
         # Ensure selection flags are set in session state
         if "selection_complete" not in st.session_state:
             st.session_state.selection_complete = False
-
+            
         if "domain_filtering" not in st.session_state:
             st.session_state.domain_filtering = None  # Track if user wants domain filtering
         
