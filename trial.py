@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import base64
 import requests
 import json
-import io
+
 # =============================================================================
 # from streamlit_echarts import st_echarts
 # from streamlit_extras.switch_page_button import switch_page
@@ -215,8 +215,7 @@ elif st.session_state.page == "loading":
                 if uploaded_file.name.endswith(".csv"):
                     df = pd.read_csv(uploaded_file)
                 elif uploaded_file.name.endswith((".xls", ".xlsx")):
-                    file_bytes = io.BytesIO(uploaded_file.getvalue())  # Convert to BytesIO
-                    df = pd.read_excel(file_bytes, engine="openpyxl")
+                    df = pd.read_excel(uploaded_file, engine="openpyxl")
                 else:
                     return None  # Return None for unsupported formats
                 return df
