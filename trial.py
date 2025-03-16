@@ -646,7 +646,9 @@ elif st.session_state.page == "dashboard":
     
     df = st.session_state.get("df")
     
-    df.columns = df.columns.str.strip()
+# =============================================================================
+#     df.columns = df.columns.str.strip()
+# =============================================================================
     
     if df is None:
         st.error("No data found. Please upload a valid file.")
