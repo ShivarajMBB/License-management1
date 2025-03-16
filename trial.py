@@ -205,31 +205,32 @@ elif st.session_state.page == "loading":
         with col2:
             progress_bar = st.progress(0)  # Initialize progress bar in the center
         
-        uploaded_file = st.session_state.get("uploaded_file")  # Retrieve uploaded file
-
-        # Function to load data
-        @st.cache_data
-        def load_data(uploaded_file):
-            time.sleep(1)  # Simulate loading time
-            try:
-                if uploaded_file.type == "text/csv":
-                    df = pd.read_csv(uploaded_file)
-                elif uploaded_file.name.endswith((".xls", ".xlsx")):
-                    df = pd.read_excel(uploaded_file)
-                else:
-                    return None  # Return None for unsupported formats
-                return df
-            except Exception:
-                return None  # Return None if loading fails
-        
-        # Load data and store in session state
-        df = None
-        if uploaded_file:
-            df = load_data(uploaded_file)
-            if df is not None:
-                df.columns = df.columns.str.strip()
-                df.columns = df.columns.str.lower()
-                st.session_state.df = df  # Store loaded dataframe in session state
+    uploaded_file = st.session_state.get("uploaded_file")  # Retrieve uploaded file
+    
+    # Function to load data
+    @st.cache_data
+    def load_data(uploaded_file):
+        time.sleep(1)  # Simulate loading time
+        try:
+            if uploaded_file.name.endswith(".csv"):
+                df = pd.read_csv(uploaded_file)
+            elif uploaded_file.name.endswith((".xls", ".xlsx")):  # Explicit check for Excel
+                df = pd.read_excel(uploaded_file)
+            else:
+                return None  # Unsupported file format
+            return df
+        except Exception as e:
+            st.error(f"Error loading file: {e}")  # Display error message in Streamlit
+            return None  # Return None if loading fails
+    
+    # Process file if uploaded
+    if uploaded_file:
+        df = load_data(uploaded_file)
+        if df is not None:
+            df.columns = df.columns.str.strip().str.lower()  # Clean column names
+            st.session_state.df = df  # Store in session state
+        else:
+            st.session_state.df = None  # Reset df if loading fails
 # =============================================================================
 #             else:
 #                 st.error("Failed to load file. Please check the format and try again.")
