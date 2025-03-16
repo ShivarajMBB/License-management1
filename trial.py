@@ -212,10 +212,10 @@ elif st.session_state.page == "loading":
         def load_data(uploaded_file):
             time.sleep(1)  # Simulate loading time
             try:
-                if uploaded_file.name.endswith(".csv"):
+                if uploaded_file.type == "text/csv":
                     df = pd.read_csv(uploaded_file)
                 elif uploaded_file.name.endswith((".xls", ".xlsx")):
-                    df = pd.read_excel(uploaded_file, engine="openpyxl")
+                    df = pd.read_excel(uploaded_file)
                 else:
                     return None  # Return None for unsupported formats
                 return df
@@ -579,27 +579,26 @@ elif st.session_state.page == "dashboard":
         )
         
     with col2:
-        # Initialize session state for total licenses
+        # Ensure session state key exists
         if "total_license" not in st.session_state:
             st.session_state.total_license = 0  # Default value
     
-        # Function to update total_license dynamically
         def update_total_license():
             try:
-                st.session_state.total_license = int(st.session_state.total_license)
+                st.session_state.total_license = int(st.session_state.total_license_input)
             except ValueError:
                 st.session_state.total_license = 0  # Default if input is invalid
     
-        # Number input bound to session state
+        # Use a separate key for user input
         st.number_input(
             "Total existing licenses:", 
-            min_value=0,  # Prevents negative values
-            value=st.session_state.total_license,  # Default from session state
-            step=1,  # Ensures only whole numbers
-            format="%d",  # Integer format (no decimals)
-            key="total_license",  # Directly binds session state
-            on_change=update_total_license  # Updates session state dynamically
+            min_value=0,  
+            step=1,  
+            format="%d",  
+            key="total_license_input",  # Separate key for input
+            on_change=update_total_license  
         )
+
         
     with col3:
         st.session_state.inactive_days_internal = st.session_state.get("inactive_days_internal", 90)  # Default value
