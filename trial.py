@@ -98,7 +98,7 @@ if st.session_state.page == "login":
             st.markdown(
                 """
                 <style>
-                    .rights-text { text-align: center; font-size: 12px; color: #6c757d; margin-top: 20px; }
+                    .rights-text { text-align: center; font-size: 8px; color: #6c757d; margin-top: 20px; }
                 </style>
                 <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
                 """,
@@ -134,8 +134,10 @@ elif st.session_state.page == "upload":
         st.markdown(
             """
             <style>
-                .sign-in-title { text-align: center; font-weight: bold; margin-bottom: -10px; }
-                .sign-in-subtext { text-align: center; font-size: 14px; color: #6c757d; margin-top: -10px; }
+                .sign-in-title { text-align: center; font-weight: bold; margin-bottom: -15px; }
+                .egexzqm3{
+                    display:none;}
+                .sign-in-subtext { text-align: center; font-size: 14px; color: #6c757d; margin-top: -15px; }
                 .stButton > button { width: 100%; padding: 12px; font-size: 18px; font-weight: bold;
                                      background-color: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; }
                 .stButton > button:hover { background-color: #0056b3; }
@@ -146,52 +148,55 @@ elif st.session_state.page == "upload":
             unsafe_allow_html=True
         )   
 
+    # Initialize logo spacing
+    if "logo_spacing" not in st.session_state:
+        st.session_state.logo_spacing = 320
+        
+    st.session_state.logo_spacing = 320
     
-        # Initialize logo spacing
-        if "logo_spacing" not in st.session_state:
-            st.session_state.logo_spacing = 300
-            
-        st.session_state.logo_spacing = 300
-    
-        # File Upload Section
-        col1, col2, col3 = st.columns([1.5, 2, 1.5])
-        with col2:
-            uploaded_file = st.file_uploader("", type=["csv", "xls", "xlsx"])
-            
-            if uploaded_file:
-                st.success("File uploaded successfully!")
-                st.session_state.file_uploaded = True
-                st.session_state.uploaded_file = uploaded_file  # Store actual file object
-                st.session_state.uploaded_filename = uploaded_file.name
-                st.session_state.logo_spacing = 115
-    
-                if st.button("Continue"):
-                    try:
-                        # Perform Processing (Simulate)
-                        switch_page("loading")  # Move to the loading page
-                    except Exception as e:
-                        st.error(f"Processing failed: {e}")
-                        st.cache_data.clear()  # Clear all cache except credentials
-                        st.session_state["valid_credentials"] = VALID_CREDENTIALS  # Restore credentials
-                        switch_page("upload")  # Go back to upload page
-    
-        # Footer text
-        st.markdown(
-            """
-            <style>
-                .rights-text { text-align: center; font-size: 10px; color: #6c757d; margin-top: 10px; }
-            </style>
-            <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
-            """,
-            unsafe_allow_html=True
-        )
-    
+    # File Upload Section
+    col1, col2, col3 = st.columns([1.5, 2, 1.5])
+    with col2:
+        uploaded_file = st.file_uploader("", type=["csv", "xls", "xlsx"])
+        
+        if uploaded_file:
+            st.success("File uploaded successfully!")
+            st.session_state.file_uploaded = True
+            st.session_state.uploaded_file = uploaded_file  # Store actual file object
+            st.session_state.uploaded_filename = uploaded_file.name
+            st.session_state.logo_spacing = 140
+
+            if st.button("Continue"):
+                try:
+                    # Perform Processing (Simulate)
+                    switch_page("loading")  # Move to the loading page
+                except Exception as e:
+                    st.error(f"Processing failed: {e}")
+                    st.cache_data.clear()  # Clear all cache except credentials
+                    st.session_state["valid_credentials"] = VALID_CREDENTIALS  # Restore credentials
+                    switch_page("upload")  # Go back to upload page
+        # Fix: Footer moved into a separate container to ensure it stays at the bottom
+        with st.container():
+            st.markdown(
+                """
+                <style>
+                    .rights-text { text-align: center; font-size: 8px; color: #6c757d; margin-top: 50px; }
+                </style>
+                <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
+                """,
+                unsafe_allow_html=True
+            )
+
         # Centering the logo
         with col2:
-            inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])
+            inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=200)
+
+    st.write("")  # Forces Streamlit to recognize this as a separate section
+    st.write("")  # Extra spacing if needed
+
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
 elif st.session_state.page == "loading":
@@ -363,7 +368,7 @@ elif st.session_state.page == "dashboard":
         filtered = {user_type: df[df["user type"] == user_type].copy() for user_type in user_types}
         
         no_access = {
-            user_type: filtered[user_type][(filtered[user_type][matching_columns] <= 3).all(axis=1)]
+            user_type: filtered[user_type][(filtered[user_type][matching_columns] == 0).all(axis=1)]
             for user_type in user_types
         }
 
