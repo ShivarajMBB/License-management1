@@ -144,7 +144,8 @@ elif st.session_state.page == "upload":
             <p class='sign-in-subtext'>Upload documents to process the report</p>
             """,
             unsafe_allow_html=True
-        )
+        )   
+
     
         # Initialize logo spacing
         if "logo_spacing" not in st.session_state:
@@ -178,7 +179,7 @@ elif st.session_state.page == "upload":
         st.markdown(
             """
             <style>
-                .rights-text { text-align: center; font-size: 12px; color: #6c757d; margin-top: 20px; }
+                .rights-text { text-align: center; font-size: 10px; color: #6c757d; margin-top: 10px; }
             </style>
             <p class='rights-text'>© 2024 All Rights Reserved. Made with love by Technoboost !</p>
             """,
@@ -190,7 +191,7 @@ elif st.session_state.page == "upload":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150, use_container_width=False)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150)
 
 # ----------------------------- PAGE 3: LOADING --------------------------------
 elif st.session_state.page == "loading":
@@ -207,21 +208,24 @@ elif st.session_state.page == "loading":
         
     uploaded_file = st.session_state.get("uploaded_file")  # Retrieve uploaded file
     
-    # Function to load data
     @st.cache_data
     def load_data(uploaded_file):
         time.sleep(1)  # Simulate loading time
         try:
+            uploaded_file.seek(0)  # Ensure fresh read
+    
             if uploaded_file.name.endswith(".csv"):
-                df = pd.read_csv(uploaded_file)
-            elif uploaded_file.name.endswith((".xls", ".xlsx")):  # Explicit check for Excel
+                df = pd.read_csv(uploaded_file, encoding="utf-8", low_memory=False)
+            elif uploaded_file.name.endswith((".xls", ".xlsx")):  # Check for Excel
                 df = pd.read_excel(uploaded_file)
             else:
                 return None  # Unsupported file format
+            
             return df
         except Exception as e:
             st.error(f"Error loading file: {e}")  # Display error message in Streamlit
             return None  # Return None if loading fails
+
     
     # Process file if uploaded
     if uploaded_file:
@@ -235,7 +239,6 @@ elif st.session_state.page == "loading":
 #             else:
 #                 st.error("Failed to load file. Please check the format and try again.")
 # =============================================================================
-
 
         # Extract unique email domains
         def extract_email_domains(df):
@@ -360,7 +363,7 @@ elif st.session_state.page == "dashboard":
         filtered = {user_type: df[df["user type"] == user_type].copy() for user_type in user_types}
         
         no_access = {
-            user_type: filtered[user_type][(filtered[user_type][matching_columns] == 0).all(axis=1)]
+            user_type: filtered[user_type][(filtered[user_type][matching_columns] <= 3).all(axis=1)]
             for user_type in user_types
         }
 
@@ -647,10 +650,6 @@ elif st.session_state.page == "dashboard":
     
     df = st.session_state.get("df")
     
-# =============================================================================
-#     df.columns = df.columns.str.strip()
-# =============================================================================
-    
     if df is None:
         st.error("No data found. Please upload a valid file.")
         st.stop()  # Stop execution if df is None
@@ -704,7 +703,7 @@ elif st.session_state.page == "dashboard":
         "internal": ["Member", "Provisional Member", "Viewer"],
         "external": ["Guest", "Provisional Member", "Viewer"]
     }
-
+    
     # Apply filtering for internal users
     result_internal = filter_users(df_internal, user_types["internal"], internal_matching_columns)
     if len(result_internal) == 3:
@@ -943,24 +942,90 @@ elif st.session_state.page == "dashboard":
 #             unsafe_allow_html=True
 #         )
 # =============================================================================
-
-    with col5:
-        st.markdown(
-            f"""
-            <div class="custom-metric">
-                <div class="metric-image">
-                    <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
-                </div>
-                <div class="metric-data">
-                    <div class="metric-label">Potential saving</div>
-                    <div class="metric-value">{potential_savings:.2f}</div>
+    animation_css = """
+        <style>
+        @keyframes loopAnimation {
+            0% { opacity: 0; transform: translateY(20px) scale(1); color: #007BFF; }
+            40% { opacity: 1; transform: translateY(0px) scale(1.2); color: #28A745; } /* Turns green */
+            60% { opacity: 1; transform: scale(1.2); color: #28A745; } /* Stays visible */
+            70% { opacity: 1; transform: scale(1.5); color: #28A745; } /* Pop out */
+            75% { opacity: 1; transform: scale(1.5); color: #28A745; } /* Party popper appears */
+            80% { opacity: 1; transform: scale(1.2); color: #28A745; } /* Back to normal */
+            100% { opacity: 0; transform: translateY(20px) scale(1); color: #007BFF; } /* Resets */
+        }
+    
+        .animated-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            display: inline-block;
+            animation: loopAnimation 8s infinite ease-in-out; /* 5s cycle */
+            margin-left: 15px;  /* Adds left margin */
+        }
+    
+        @keyframes popperAnimation {
+            0%, 69% { opacity: 0; transform: scale(0.5); } /* Hidden */
+            70% { opacity: 1; transform: scale(1); } /* Appears */
+            80% { opacity: 0; transform: scale(0.5); } /* Disappears */
+        }
+    
+        .party-popper {
+            font-size: 1.2em;
+            margin-left: 15px;
+            display: inline-block;
+            animation: popperAnimation 3s infinite ease-in-out; /* Syncs with main animation */
+        }
+        </style>
+    """
+    
+    # If potential savings is positive, show animation
+    animated_html = f"""
+        {animation_css}
+        <div class="custom-metric">
+            <div class="metric-image">
+                <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
+            </div>
+            <div class="metric-data">
+                <div class="metric-label">Potential Saving</div>
+                <div>
+                    <span class="animated-value">{potential_savings:.2f}</span>
+                    <span class="party-popper">🎉</span>  <!-- Party popper emoji -->
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+        </div>
+    """ if potential_savings > 0 else f"""
+        <div class="custom-metric">
+            <div class="metric-image">
+                <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
+            </div>
+            <div class="metric-data">
+                <div class="metric-label">Potential Saving</div>
+                <div class="metric-value">{potential_savings:.2f}</div>
+            </div>
+        </div>
+    """
     
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    # Render in Streamlit
+    with col5:
+        st.markdown(animated_html, unsafe_allow_html=True)
+
+# =============================================================================
+#         st.markdown(
+#             f"""
+#             <div class="custom-metric">
+#                 <div class="metric-image">
+#                     <img src="https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Icon-4.svg">
+#                 </div>
+#                 <div class="metric-data">
+#                     <div class="metric-label">Potential saving</div>
+#                     <div class="metric-value">{potential_savings:.2f}</div>
+#                 </div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True
+#         )
+# =============================================================================
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     
     # Collect emails for downgrade to guest
     downgrade_to_guest_emails = []
@@ -1170,62 +1235,6 @@ elif st.session_state.page == "dashboard":
                 key=f"download_int_{idx}"
             )
     
-# =============================================================================
-#     # Alternative approach using buttons
-#     st.subheader("Alternative Approach with Buttons")
-#     
-#     # Create tabs for the two tables
-#     tab1, tab2 = st.tabs(["External Licenses", "Internal Licenses"])
-#     
-#     with tab1:
-#         # Display the table
-#         st.dataframe(df_report, hide_index=True, use_container_width=True)
-#         
-#         # Add row selection with standard widgets
-#         col1, col2 = st.columns([3, 1])
-#         with col1:
-#             row_options = [f"Row {i+1}: {df_report.iloc[i].get('Name', '') or df_report.iloc[i].get('ID', i)}" 
-#                           for i in range(len(df_report))]
-#             selected_rows = st.multiselect("Select rows to download:", row_options, key="ext_select")
-#         
-#         with col2:
-#             if selected_rows:
-#                 indices = [int(row.split(":")[0].replace("Row ", "")) - 1 for row in selected_rows]
-#                 selected_data = df_report.iloc[indices].copy()
-#                 
-#                 st.download_button(
-#                     label="Download Selected",
-#                     data=selected_data.to_csv(index=False),
-#                     file_name="selected_external_data.csv",
-#                     mime="text/csv",
-#                     key="download_ext_multi"
-#                 )
-#     
-#     with tab2:
-#         # Display the table
-#         st.dataframe(df_report_2, hide_index=True, use_container_width=True)
-#         
-#         # Add row selection with standard widgets
-#         col1, col2 = st.columns([3, 1])
-#         with col1:
-#             row_options = [f"Row {i+1}: {df_report_2.iloc[i].get('Name', '') or df_report_2.iloc[i].get('ID', i)}" 
-#                           for i in range(len(df_report_2))]
-#             selected_rows = st.multiselect("Select rows to download:", row_options, key="int_select")
-#         
-#         with col2:
-#             if selected_rows:
-#                 indices = [int(row.split(":")[0].replace("Row ", "")) - 1 for row in selected_rows]
-#                 selected_data = df_report_2.iloc[indices].copy()
-#                 
-#                 st.download_button(
-#                     label="Download Selected",
-#                     data=selected_data.to_csv(index=False),
-#                     file_name="selected_internal_data.csv",
-#                     mime="text/csv",
-#                     key="download_int_multi"
-#                 )
-# =============================================================================
-
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Display Charts
