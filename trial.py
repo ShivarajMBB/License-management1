@@ -15,24 +15,28 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-# Completely hide Streamlit's menu, footer, "Manage App" button, Hosted by Streamlit badge, and GitHub icon
+# Hide Streamlit UI elements including "Manage App", "Hosted by Streamlit", and GitHub Icon
 hide_streamlit_style = """
     <style>
         #MainMenu {visibility: hidden;} /* Hides the three dots menu */
         header {visibility: hidden;} /* Hides the header */
         footer {visibility: hidden !important;} /* Hides the footer */
-        
+
         /* Hide the "Manage App" button */
-        .st-emotion-cache-18ni7ap {display: none !important;}
-        .st-emotion-cache-1v0mbdj {display: none !important;}
-        .viewerBadge_container__1QSob {display: none !important;}
-        .stDeployButton {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
+        [data-testid="stStatusWidget"] {display: none !important;}
+        [data-testid="stDeployButton"] {display: none !important;}
+        [data-testid="stAppViewContainer"] footer {display: none !important;}
 
         /* Hide "Hosted by Streamlit" badge */
+        .viewerBadge_link__1S137 {display: none !important;}
         .st-emotion-cache-1wrcr25 {display: none !important;}
 
         /* Hide the GitHub icon */
         .st-emotion-cache-16txtl3 {display: none !important;}
+
+        /* Hide other unwanted elements */
+        div[data-testid="stDecoration"] {display: none !important;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
