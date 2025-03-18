@@ -150,9 +150,9 @@ elif st.session_state.page == "upload":
 
     # Initialize logo spacing
     if "logo_spacing" not in st.session_state:
-        st.session_state.logo_spacing = 320
+        st.session_state.logo_spacing = 300
         
-    st.session_state.logo_spacing = 320
+    st.session_state.logo_spacing = 300
     
     # File Upload Section
     col1, col2, col3 = st.columns([1.5, 2, 1.5])
@@ -164,7 +164,7 @@ elif st.session_state.page == "upload":
             st.session_state.file_uploaded = True
             st.session_state.uploaded_file = uploaded_file  # Store actual file object
             st.session_state.uploaded_filename = uploaded_file.name
-            st.session_state.logo_spacing = 140
+            st.session_state.logo_spacing = 110
 
             if st.button("Continue"):
                 try:
