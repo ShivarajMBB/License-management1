@@ -15,7 +15,7 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-# Hide Streamlit UI elements including "Manage App", "Hosted by Streamlit", and GitHub Icon
+# Hide Streamlit UI elements including "Manage App", "Hosted by Streamlit", and icons
 hide_streamlit_style = """
     <style>
         #MainMenu {visibility: hidden;} /* Hides the three dots menu */
@@ -31,10 +31,13 @@ hide_streamlit_style = """
         /* Hide "Hosted by Streamlit" badge */
         .viewerBadge_link__1S137 {display: none !important;}
         .st-emotion-cache-1wrcr25 {display: none !important;}
-
-        /* Hide the GitHub icon */
         .st-emotion-cache-16txtl3 {display: none !important;}
-
+        
+        /* Hide the Streamlit branding at the bottom */
+        .viewerBadge_container__1QSob {display: none !important;}
+        .st-emotion-cache-z5fcl4 {display: none !important;} /* Streamlit logo */
+        .st-emotion-cache-0 {display: none !important;} /* Extra badge container */
+        
         /* Hide other unwanted elements */
         div[data-testid="stDecoration"] {display: none !important;}
     </style>
