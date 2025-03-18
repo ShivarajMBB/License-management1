@@ -37,17 +37,6 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <style>
-    body {
-        zoom: 90%;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Initialize session state variables
 if "page" not in st.session_state:
     st.session_state.page = "login"  # Default page is Login
