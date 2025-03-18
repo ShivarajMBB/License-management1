@@ -15,19 +15,31 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-def hide_streamlit_style():
-    # CSS to hide the Streamlit footer
-    hide_st_style = """
+import streamlit as st
+
+def reposition_streamlit_footer():
+    # CSS to move the Streamlit footer to a less intrusive position
+    footer_style = """
         <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            footer:after {
-                content:''; 
-                visibility: hidden;
+            footer {
+                position: fixed;
+                bottom: -50px; /* Move it down and mostly out of view */
+                right: 10px;
+                opacity: 0.3; /* Make it semi-transparent */
+                z-index: 999;
+            }
+            footer:hover {
+                bottom: 0px; /* Show it on hover if needed */
+                opacity: 0.7;
             }
         </style>
     """
-    st.markdown(hide_st_style, unsafe_allow_html=True)
+    st.markdown(footer_style, unsafe_allow_html=True)
+
+# Call this function near the top of your app
+reposition_streamlit_footer()
+
+# Your app code continues here
 
 # Call this function near the top of your app
 hide_streamlit_style()
