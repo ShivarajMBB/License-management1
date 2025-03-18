@@ -110,7 +110,7 @@ if st.session_state.page == "login":
             inner_col1, inner_col2, inner_col3 = st.columns([0.85, 0.5, 0.85])  
             with inner_col2:
                 st.markdown(f"<div style='height: {st.session_state.logo_spacing}px;'></div>", unsafe_allow_html=True)
-                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=150)
+                st.image("https://raw.githubusercontent.com/ShivarajMBB/Streamlit-repo/master/Logo.png", width=125)
 
 
 # -------------------------- PAGE 2: FILE UPLOAD ------------------------------
@@ -175,6 +175,7 @@ elif st.session_state.page == "upload":
                     st.cache_data.clear()  # Clear all cache except credentials
                     st.session_state["valid_credentials"] = VALID_CREDENTIALS  # Restore credentials
                     switch_page("upload")  # Go back to upload page
+                    
         # Fix: Footer moved into a separate container to ensure it stays at the bottom
         with st.container():
             st.markdown(
@@ -218,7 +219,7 @@ elif st.session_state.page == "loading":
         time.sleep(1)  # Simulate loading time
         try:
             uploaded_file.seek(0)  # Ensure fresh read
-    
+
             if uploaded_file.name.endswith(".csv"):
                 df = pd.read_csv(uploaded_file, encoding="utf-8", low_memory=False)
             elif uploaded_file.name.endswith((".xls", ".xlsx")):  # Check for Excel
@@ -349,45 +350,30 @@ elif st.session_state.page == "loading":
         if df is None:
             st.error("Failed to load file. Please check the file format and try again.")
 
-
 # ----------------------------- PAGE 4: DASHBOARD -----------------------------
-# =============================================================================
-# elif "page" not in st.session_state:
-#     st.session_state.page = "dashboard"
-# 
-# if "loading_complete" not in st.session_state:
-#     st.session_state.loading_complete = True  # Set to False if loading logic is needed
-# =============================================================================
 elif st.session_state.page == "dashboard":
     if not st.session_state.loading_complete:
         st.session_state.page = "loading"
         st.rerun()
 
     # Function to filter users
-    def filter_users(df, user_types, matching_columns):
+    def filter_users(df, user_types, matching_columns, threshold):
         filtered = {user_type: df[df["user type"] == user_type].copy() for user_type in user_types}
         
         no_access = {
-            user_type: filtered[user_type][(filtered[user_type][matching_columns] == 0).all(axis=1)]
+            user_type: filtered[user_type][(filtered[user_type][matching_columns] <= threshold).all(axis=1)]
             for user_type in user_types
         }
 
         downgrade = {
-            user_type: filtered[user_type][(filtered[user_type][matching_columns[0]] != 0) & 
-                                           (filtered[user_type][matching_columns[2]] == 0) & 
-                                           (filtered[user_type][matching_columns[3]] == 0)]
+            user_type: filtered[user_type][(filtered[user_type][matching_columns[0]] != threshold) & 
+                                           (filtered[user_type][matching_columns[1]] <= threshold) &
+                                           (filtered[user_type][matching_columns[2]] <= threshold) &
+                                           (filtered[user_type][matching_columns[3]] <= threshold)]
             for user_type in user_types if user_type not in ["Viewer", "Guest"]
         }
 
         return (filtered, no_access, downgrade) if downgrade else (filtered, no_access)
-    
-# =============================================================================
-#     active_licenses = df[df["Status"] == "Active"].shape[0]
-#     inactive_licenses = total_licenses - active_licenses
-#     savings_per_license = 2.14  # Adjust based on pricing logic
-#     potential_monthly_savings = inactive_licenses * savings_per_license
-#     potential_annual_savings = potential_monthly_savings * 12
-# =============================================================================
 
     # Set background color and styling
     st.markdown(
@@ -555,7 +541,7 @@ elif st.session_state.page == "dashboard":
     )
     
     # Create four columns: col1 for filename, col2 for spacing, col3 for button 1, col4 for button 2
-    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.3,1.3, 1.2, 1.2, 3.3, 1, 1])
+    col1, col2, col3, col4, col5, col6, col7 = st.columns([1.1,1.1, 1.1, 1.1, 1.1, 3.8, 1])
 
     with col1:
         # Initialize session state for license cost input
@@ -624,6 +610,27 @@ elif st.session_state.page == "dashboard":
             "Externals Inactive days",
             options=[90, 180, 270, 365],
             key="inactive_days_external"  # Directly binds to session state
+        )
+
+    with col5:
+        # Ensure session state key exists
+        if "min_usage" not in st.session_state:
+            st.session_state.min_usage = 0  # Default value
+    
+        def update_min_usage():
+            try:
+                st.session_state.min_usage = int(st.session_state.min_usage_input)
+            except ValueError:
+                st.session_state.min_usage = 0  # Default if input is invalid
+    
+        # Use a separate key for user input
+        st.number_input(
+            "Min usage of License:", 
+            min_value=0,  
+            step=1,  
+            format="%d",  
+            key="min_usage_input",  # Separate key for input
+            on_change=update_min_usage  
         )
         
 # =============================================================================
@@ -709,8 +716,10 @@ elif st.session_state.page == "dashboard":
         "external": ["Guest", "Provisional Member", "Viewer"]
     }
     
+    threshold = st.session_state.min_usage  # Get the updated value
+    
     # Apply filtering for internal users
-    result_internal = filter_users(df_internal, user_types["internal"], internal_matching_columns)
+    result_internal = filter_users(df_internal, user_types["internal"], internal_matching_columns, threshold)
     if len(result_internal) == 3:
         df_internal_filtered, df_internal_No_access, df_internal_downgrade = result_internal
     else:
@@ -718,7 +727,7 @@ elif st.session_state.page == "dashboard":
         df_internal_downgrade = {}
     
     # Apply filtering for external users
-    result_external = filter_users(df_external, user_types["external"], external_matching_columns)
+    result_external = filter_users(df_external, user_types["external"], external_matching_columns, threshold=0)
     if len(result_external) == 3:
         df_external_filtered, df_external_No_access, df_external_downgrade = result_external
     else:
@@ -898,55 +907,6 @@ elif st.session_state.page == "dashboard":
             unsafe_allow_html=True
         )
 
-# =============================================================================
-#     with col2:
-#         st.markdown(
-#             f"""
-#             <div class="custom-metric">
-#                 <div class="metric-image">
-#                     <img src="">
-#                 </div>
-#                 <div class="metric-data">
-#                     <div class="metric-label"></div>
-#                     <div class="metric-value"></div>
-#                 </div>
-#             </div>
-#             """,
-#             unsafe_allow_html=True
-#         )
-# 
-#     with col3:
-#         st.markdown(
-#             f"""
-#             <div class="custom-metric">
-#                 <div class="metric-image">
-#                     <img src="">
-#                 </div>
-#                 <div class="metric-data">
-#                     <div class="metric-label"></div>
-#                     <div class="metric-value"></div>
-#                 </div>
-#             </div>
-#             """,
-#             unsafe_allow_html=True
-#         )
-#         
-#     with col4:
-#         st.markdown(
-#             f"""
-#             <div class="custom-metric">
-#                 <div class="metric-image">
-#                     <img src="">
-#                 </div>
-#                 <div class="metric-data">
-#                     <div class="metric-label"></div>
-#                     <div class="metric-value"></div>
-#                 </div>
-#             </div>
-#             """,
-#             unsafe_allow_html=True
-#         )
-# =============================================================================
     animation_css = """
         <style>
         @keyframes loopAnimation {
@@ -1147,9 +1107,9 @@ elif st.session_state.page == "dashboard":
                             "Revoke the inactive ID's"]
     }
     
-    df_report = pd.DataFrame(data_external)
+    df_report = pd.DataFrame(data_internal)
     
-    df_report_2 = pd.DataFrame(data_internal)
+    df_report_2 = pd.DataFrame(data_external)
 
     # Function to create a download link for a dataframe
     def get_download_link(df_to_download, filename="data.csv"):
@@ -1169,7 +1129,7 @@ elif st.session_state.page == "dashboard":
                 text-align: center;
             }
         </style>
-        <div class="custom-header">Detailed License Report for Externals</div>
+        <div class="custom-header">Detailed License Report for Internals</div>
     """, unsafe_allow_html=True)
     
     # Add a column for downloads if it doesn't exist
@@ -1205,7 +1165,7 @@ elif st.session_state.page == "dashboard":
             )
     
     st.markdown("""
-        <div class="custom-header">Detailed License Report for Internals</div>
+        <div class="custom-header">Detailed License Report for Externals</div>
     """, unsafe_allow_html=True)
     
     # Add a column for downloads if it doesn't exist
