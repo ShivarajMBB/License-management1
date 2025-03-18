@@ -15,34 +15,27 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-import streamlit as st
+# Completely hide Streamlit's menu, footer, "Manage App" button, Hosted by Streamlit badge, and GitHub icon
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;} /* Hides the three dots menu */
+        header {visibility: hidden;} /* Hides the header */
+        footer {visibility: hidden !important;} /* Hides the footer */
+        
+        /* Hide the "Manage App" button */
+        .st-emotion-cache-18ni7ap {display: none !important;}
+        .st-emotion-cache-1v0mbdj {display: none !important;}
+        .viewerBadge_container__1QSob {display: none !important;}
+        .stDeployButton {display: none !important;}
 
-def reposition_streamlit_footer():
-    # CSS to move the Streamlit footer to a less intrusive position
-    footer_style = """
-        <style>
-            footer {
-                position: fixed;
-                bottom: -50px; /* Move it down and mostly out of view */
-                right: 10px;
-                opacity: 0.3; /* Make it semi-transparent */
-                z-index: 999;
-            }
-            footer:hover {
-                bottom: 0px; /* Show it on hover if needed */
-                opacity: 0.7;
-            }
-        </style>
-    """
-    st.markdown(footer_style, unsafe_allow_html=True)
+        /* Hide "Hosted by Streamlit" badge */
+        .st-emotion-cache-1wrcr25 {display: none !important;}
 
-# Call this function near the top of your app
-reposition_streamlit_footer()
-
-# Your app code continues here
-
-# Call this function near the top of your app
-hide_streamlit_style()
+        /* Hide the GitHub icon */
+        .st-emotion-cache-16txtl3 {display: none !important;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Initialize session state variables
 if "page" not in st.session_state:
