@@ -15,14 +15,13 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-hide_st_style = """
-
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-
-"""
-st.markdown(hide_st_style, unsafe_allow_html=True)
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 # Initialize session state variables
 if "page" not in st.session_state:
