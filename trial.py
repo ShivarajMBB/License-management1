@@ -417,7 +417,7 @@ elif st.session_state.page == "dashboard":
             border-radius: 40px;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-            margin-top: -30px;
+            margin-top: -50px;
             width: 100%;
             min-height: 50px;
             display: flex;
