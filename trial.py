@@ -15,27 +15,22 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-# Completely hide Streamlit's menu, footer, "Manage App" button, Hosted by Streamlit badge, and GitHub icon
-hide_streamlit_style = """
-    <style>
-        #MainMenu {visibility: hidden;} /* Hides the three dots menu */
-        header {visibility: hidden;} /* Hides the header */
-        footer {visibility: hidden !important;} /* Hides the footer */
-        
-        /* Hide the "Manage App" button */
-        .st-emotion-cache-18ni7ap {display: none !important;}
-        .st-emotion-cache-1v0mbdj {display: none !important;}
-        .viewerBadge_container__1QSob {display: none !important;}
-        .stDeployButton {display: none !important;}
+def hide_streamlit_style():
+    # CSS to hide the Streamlit footer
+    hide_st_style = """
+        <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            footer:after {
+                content:''; 
+                visibility: hidden;
+            }
+        </style>
+    """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
 
-        /* Hide "Hosted by Streamlit" badge */
-        .st-emotion-cache-1wrcr25 {display: none !important;}
-
-        /* Hide the GitHub icon */
-        .st-emotion-cache-16txtl3 {display: none !important;}
-    </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# Call this function near the top of your app
+hide_streamlit_style()
 
 # Initialize session state variables
 if "page" not in st.session_state:
