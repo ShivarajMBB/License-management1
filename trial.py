@@ -15,12 +15,16 @@ import json
 # Set Page Title
 st.set_page_config(page_title="License Management System", layout="wide")
 
-# Hide Streamlit's menu and footer
+# Hide Streamlit's menu, header, and "Manage App" footer
 hide_streamlit_style = """
     <style>
         #MainMenu {visibility: hidden;} /* Hides the three dots menu */
-        footer {visibility: hidden;} /* Hides the footer */
         header {visibility: hidden;} /* Hides the header */
+        footer {visibility: hidden;} /* Hides the footer */
+        
+        /* Additional CSS to force-hide the Manage App button */
+        [data-testid="stAppViewContainer"] > footer {display: none !important;}
+        [data-testid="stStatusWidget"] {display: none !important;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
