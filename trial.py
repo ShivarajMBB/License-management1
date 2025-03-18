@@ -25,6 +25,16 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+# Hide Streamlit's menu, header, and "Manage App" button
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;} /* Hides the three dots menu */
+        footer {visibility: hidden;} /* Hides the footer, including "Manage App" */
+        header {visibility: hidden;} /* Hides the header */
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Initialize session state variables
 if "page" not in st.session_state:
     st.session_state.page = "login"  # Default page is Login
