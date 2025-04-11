@@ -495,6 +495,7 @@ elif st.session_state.page == "dashboard":
             font-size: 14px;
             font-weight: bold;
             margin-bottom: -5px;
+            color: black;
         }
 
         /* Metric value */
