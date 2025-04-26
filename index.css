@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+html {
+  font-family: "Inter", sans-serif;
+}
+.text-10 {
+  font-size: 10px;
+}
+.text-14 {
+  font-size: 14px;
+}
+.text-blue {
+  color: #2b3674;
+}
+.text-gray {
+  color: #a3aed0;
+}
+.text-Darkblue {
+  color: #4318ff;
+}
+.icon-position {
+  top: 10px;
+  right: 6px;
+  cursor: pointer;
+  color: gray;
+}
+.logo-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.bg-main {
+  background-color: #f4f7fe;
+}
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.upload-box {
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+.upload-box:hover {
+  border-color: gray;
+  cursor: pointer;
+}
+
+.upload-label {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #5f2eff;
+}
+.upload-note {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+input[type="file"] {
+  display: none;
+}
+
+.custom-box {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  border-radius: 12px;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.box-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.clear-link {
+  color: #5f2eff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-outline-primary {
+  border-color: #5f2eff;
+  color: #5f2eff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #5f2eff;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #5f2eff;
+  border-color: #5f2eff;
+}
+
+.btn-primary:hover {
+  background-color: #4b24cc;
+}
+
+.custom-btn {
+  border: 1px solid #4b24cc;
+  font-weight: 500;
+  border-radius: 6px;
+  background-color: white;
+  color: #3808d4;
+}
+.card-style {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  cursor: pointer;
+}
+th {
+  color: #a3aed0 !important;
+  font-size: 14px;
+}
+td,
+th {
+  vertical-align: middle;
+}
+.table td,
+.table th {
+  border: none;
+}
+.table th {
+  font-weight: 500;
+}
+.table td {
+  font-weight: 600;
+  color: #1e2a57;
+}
