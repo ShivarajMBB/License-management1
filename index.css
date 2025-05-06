@@ -163,9 +163,3 @@ th {
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
 }
-.card-style {
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 1rem;
-  cursor: pointer;
-}
