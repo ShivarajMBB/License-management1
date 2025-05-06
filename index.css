@@ -175,5 +175,5 @@ th {
   transition: background-color 0.3s;
 }
 .clickable:hover {
-  background-color: yellow; /* or any highlight color */
+  background-color: #f0f0f0; /* or any highlight color */
 }
