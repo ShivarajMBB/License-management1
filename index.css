@@ -170,3 +170,10 @@ th {
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
 }
+.clickable {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.clickable:hover {
+  background-color: yellow; /* or any highlight color */
+}
