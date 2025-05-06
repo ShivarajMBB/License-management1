@@ -139,4 +139,27 @@ th {
   font-weight: 600;
   color: #1e2a57;
 }
-
+.w-85 {
+  width: 85%;
+}
+.card-label {
+  color: #2b3674;
+  font-weight: 700;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.card-style {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 6px 0px;
+  cursor: pointer;
+  height: 70px;
+}
+.text-gray-2 {
+  color: #848484;
+}
+.rounded-start-16 {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
